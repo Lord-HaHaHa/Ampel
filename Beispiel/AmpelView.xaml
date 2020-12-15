@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Beispiel"
         mc:Ignorable="d"
-        Title="AmpelView" Height="369.696" Width="300">
+        Title="AmpelView" Height="369.696" Width="300" Closing="Window_Closing">
     <Grid>
         <Ellipse Name="Yellow" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="100" Margin="103,115,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
         <Ellipse x:Name="Red" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="100" Margin="103,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
         <Ellipse x:Name="Green" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="100" Margin="103,220,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
+        <TextBlock x:Name="index" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" RenderTransformOrigin="0.391,-4.877" Height="25" Width="82"/>
 
     </Grid>
 </Window>

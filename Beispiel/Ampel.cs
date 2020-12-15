@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Timers;
+using System.Diagnostics;
 
 namespace Beispiel
 {
@@ -12,37 +13,64 @@ namespace Beispiel
     {
         // Die Ampel hat einen View (Komposition)
         private AmpelView Window;
-
         // Zustände der Ampel als enum
-        private enum Zustand { red, yellow, redyellow, green, off };
+        private enum Zustand { red1, red2, red3, red4, red5, yellow, redyellow, green, off };
         // Attribut von dem Typ Zustand
         private Zustand AStatus;
-        // Timer
-        private Timer Timer;
-        public Ampel()
+
+        private int index;
+
+        public Ampel(int index, int top, int left)
         {
             // Die Ampel erzeugt ihren View selbst 
-            Window = new AmpelView();
-
+            Window = new AmpelView(this);
+            Window.Top = top;
+            Window.Left = left;
             // und zeigt den View an
             Window.Show();
             // Zustandsvariable setzen
-            this.AStatus = Zustand.off;
+            AStatus = Zustand.off;
 
-            // Zustandsvariable auf Wert prüfen
-            if(this.AStatus == Zustand.off)
-            { }
+            this.index = index;
 
             UpdateAll(); // Window Updaten
+        }
+
+        public event EventHandler OnClose;
+
+        protected void onClose(EventArgs e) { OnClose?.Invoke(this, e); }
+
+        ~Ampel()
+        {
+
         }
         public void ToggleNext()
         {
             switch (AStatus)
             {
                 case Zustand.off:
-                    AStatus = Zustand.red;
+                    if (index % 2 == 0)
+                    {
+                        AStatus = Zustand.green;
+                    }
+                    else
+                    {
+                        AStatus = Zustand.red3;
+                    }
                     break;
-                case Zustand.red:
+                case Zustand.red1:
+                    AStatus = Zustand.red2;
+                    break;
+                case Zustand.red2:
+                    AStatus = Zustand.red3;
+                    break;
+                case Zustand.red3:
+                    AStatus = Zustand.red4;
+                    break;
+                case Zustand.red4:
+                    AStatus = Zustand.red5;
+                    break;
+                case Zustand.red5:
                     AStatus = Zustand.redyellow;
                     break;
                 case Zustand.redyellow:
@@ -52,15 +80,14 @@ namespace Beispiel
                     AStatus = Zustand.yellow;
                     break;
                 case Zustand.yellow:
-                    AStatus = Zustand.red;
+                    AStatus = Zustand.red1;
                     break;
             }
             UpdateAll();
         }
 
-        public void UpdateWindow()
+        public void UpdateColors()
         {
-            
             switch (AStatus)
             {
                 case Zustand.off:
@@ -68,7 +95,11 @@ namespace Beispiel
                     Window.Yellow.Fill = Brushes.White;
                     Window.Green.Fill = Brushes.White;
                     break;
-                case Zustand.red:
+                case Zustand.red1:
+                case Zustand.red2:
+                case Zustand.red3:
+                case Zustand.red4:
+                case Zustand.red5:
                     Window.Red.Fill = Brushes.Red;
                     Window.Yellow.Fill = Brushes.White;
                     Window.Green.Fill = Brushes.White;
@@ -93,37 +124,19 @@ namespace Beispiel
 
         void UpdateAll()
         {
-            UpdateWindow();
+            UpdateColors();
+            Window.index.Text = index.ToString();
         }
 
-        public void ToggleToRed()
-        {
-            while (AStatus != Zustand.red)
-                GoToRed();
-        }
-        private void GoToRed()
-        {
-            Timer = new System.Timers.Timer(500);
-            // Set attributes for timer
-            Timer.Elapsed += OnTimedEvent;
-            Timer.AutoReset = false;
-            Timer.Enabled = true;
-        }
-        private void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            ToggleNext();
-        }
         public void SetOff()
         {
-            ToggleToRed();
             AStatus = Zustand.off;
             UpdateAll();
         }
 
         public void SetOn()
         {
-            AStatus = Zustand.red;
-            UpdateAll();
+            ToggleNext();
         }
         public string GetStatus()
         {
@@ -131,8 +144,14 @@ namespace Beispiel
             return acct.ToString();
         }
 
+        public void Close()
+        {
+            onClose(new EventArgs());
+        }
+
         public void CloseWindow()
         {
+            onClose(new EventArgs());
             Window.Close();
         }
 

@@ -21,33 +21,62 @@ namespace Beispiel
     public partial class MainWindow : Window
     {
         // Das Control-Fenster hat eine Ampel
-        private Ampel myAmpel;
+        private Ampel Ampel;
+
+
+        // Ampel-Controler 
+        private Controller controller;
+
         public MainWindow()
         {
             InitializeComponent();
-
             //Ampel wird erzeugt, Komposition
-            myAmpel = new Ampel();
+            controller = new Controller(this);
+            Ampel = controller.registerAmpel(0,100);
+            
+            //Registrieren von mehreren Ampeln
+            Ampel = controller.registerAmpel(300,0);
+            Ampel = controller.registerAmpel(600,100);
+            Ampel = controller.registerAmpel(300,300);
+
+            txtActiveAmpels.Text = "Es sind " + controller.ampels.Count().ToString() + " Ampeln aktiv";
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            myAmpel.CloseWindow();
+            while (controller.ampels.Count() > 0)
+            {
+                Ampel ampel = controller.ampels[controller.ampels.Count() - 1];
+                ampel.CloseWindow();
+            }
         }
 
         private void btnOn_Click(object sender, RoutedEventArgs e)
         {
-            myAmpel.SetOn();
+            foreach (Ampel ampel in controller.ampels)
+            {                               
+                ampel.SetOn();
+            }
         }
 
         private void btnToggle_Click(object sender, RoutedEventArgs e)
         {
-            myAmpel.ToggleNext();
+            foreach (Ampel ampel in controller.ampels) { 
+                ampel.ToggleNext(); 
+            }
         }
 
         private void btnOff_Click(object sender, RoutedEventArgs e)
         {
-            myAmpel.SetOff();
+            foreach (Ampel ampel in controller.ampels)
+            {
+                ampel.SetOff();
+            }
+        }
+
+        private void btnAuto_Click(object sender, RoutedEventArgs e)
+        {
+            controller.toggleAuto();
         }
     }
 }

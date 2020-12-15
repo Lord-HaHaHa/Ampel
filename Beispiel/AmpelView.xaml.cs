@@ -19,9 +19,16 @@ namespace Beispiel
     /// </summary>
     public partial class AmpelView : Window
     {
-        public AmpelView()
+        private Ampel _ampel;
+        public AmpelView(Ampel ampel)
         {
+            _ampel = ampel;
             InitializeComponent();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _ampel.Close();
         }
     }
 }
